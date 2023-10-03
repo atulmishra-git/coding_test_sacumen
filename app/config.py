@@ -9,3 +9,5 @@ FILES_TO_AWS = ['jpg', 'jpeg', 'png', 'mp3', 'mp4']
 S3_BUCKET = "test"
 
 GCLOUD_BUCKET = 'test'
+
+USE_THREAD = False

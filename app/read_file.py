@@ -1,5 +1,6 @@
 import os
 import glob
+import multiprocessing
 
 import boto3
 from google.cloud import storage
@@ -9,11 +10,12 @@ from .config import (
     FILES_TO_GOOGLE, 
     FILES_TO_AWS, 
     S3_BUCKET,
-    GCLOUD_BUCKET
+    GCLOUD_BUCKET,
+    USE_THREAD
 )
 
 """
-This package does not use threading it's a simple synchronous file upload 
+This package use simple thread method to demonstrate file upload
 """
 
 def read_dir():
@@ -65,13 +67,21 @@ def run():
     print("Files to Upload to AWS ", aws_files)
 
     if google_files:
-        if upload_to_gcs(google_files):
-            print("Files Uploaded to Google")
-            return True
+        if USE_THREAD:
+            t1 = multiprocessing.Process(target=upload_to_gcs, args=google_files)
+            t1.start()
+        else:
+            if upload_to_gcs(google_files):
+                print("Files Uploaded to Google")
+                return True
     
     if aws_files:
-        if upload_to_s3(aws_files):
-            print("Files Uploaded to s3")
-            return True
+        if USE_THREAD:
+            t2 = multiprocessing.Process(target=upload_to_s3, args=aws_files)
+            t2.start()
+        else:
+            if upload_to_s3(aws_files):
+                print("Files Uploaded to s3")
+                return True
     return
 
